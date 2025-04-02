@@ -3,6 +3,8 @@ from PIL import Image
 import home
 import team_report
 import player_report
+import injury_prediction
+import personalized_plan
 
 # Load images
 logo = Image.open('images/Logo.png')
@@ -54,7 +56,7 @@ st.sidebar.image(logo, use_container_width=True)
 # Create Sidebar Menu
 menu = st.sidebar.selectbox(
     'Choose an option:',
-    ('Home', 'Team Report', 'Player Report')
+    ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan')
 )
 
 # Display content based on menu selection
@@ -64,3 +66,7 @@ elif menu == 'Team Report':
     team_report.display_team_report()
 elif menu == 'Player Report':
     player_report.display_player_report()
+elif menu == 'Injury Prediction':
+    injury_prediction.display_injury_prediction()
+elif menu == 'Personalized Plan':
+    personalized_plan.display_personalized_plan()
