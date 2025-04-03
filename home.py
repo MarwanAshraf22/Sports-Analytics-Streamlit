@@ -9,7 +9,21 @@ trophy_image = Image.open('images/trophies.jpg')
 
 def display_home():
     # History of Real Madrid CF
-    st.markdown('<div class="subheader">History of Real Madrid CF</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        .report-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #AD9B30ff;  /* Real Madrid Blue */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        </style>
+        <div class="report-title">
+        ⏳ History of Real Madrid CF ⏳
+        </div>
+        """, unsafe_allow_html=True)
     st.write("""**Real Madrid Club de Fútbol** is a legendary football club based in Madrid, Spain, founded in **1902**. The club has grown into one of the most successful and prestigious in the world, known for its success both in Spain and internationally.""")
 
     # Display Stadium Image

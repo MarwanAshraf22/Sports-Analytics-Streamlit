@@ -24,7 +24,7 @@ def display_team_report():
         .report-title {
             font-size: 36px;
             font-weight: bold;
-            color: #0288D1;  /* Real Madrid Blue */
+            color: #506B77ff;  /* Real Madrid Blue */
             text-align: center;
             margin-bottom: 20px;
         }
