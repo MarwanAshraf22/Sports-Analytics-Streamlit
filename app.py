@@ -6,11 +6,10 @@ import player_report
 import injury_prediction
 import personalized_plan
 
-# Load images
 logo = Image.open('images/Logo.png')
 
-# Set the page config
 st.set_page_config(page_title="Real Madrid CF History", page_icon=logo, layout='wide')
+
 
 # Add custom CSS for styling
 st.markdown(
@@ -46,6 +45,10 @@ st.markdown(
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         background-color: #fff;
     }
+    .css-1l6n45h {  /* This is the class for Streamlit's main container */
+        max-width: 100%;  /* This would make it use the entire width */
+        margin: 0 auto;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -53,10 +56,20 @@ st.markdown(
 st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
-# Create Sidebar Menu
+# Define the icons for each menu option
+icons = {
+    'Home': '🏠',
+    'Team Report': '👥',
+    'Player Report': '⚽',
+    'Injury Prediction': '🤕',
+    'Personalized Plan': '📝'
+}
+
+# Create Sidebar Menu with icons
 menu = st.sidebar.selectbox(
     'Choose an option:',
-    ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan')
+    ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan'),
+    format_func=lambda x: f"{icons[x]} {x}"  # Add icon to the option label
 )
 
 # Display content based on menu selection

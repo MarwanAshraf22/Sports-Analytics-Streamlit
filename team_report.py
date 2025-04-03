@@ -12,13 +12,27 @@ def display_team_report():
     roster_df = pd.read_csv('data/roster_preprocessed.csv')
     
     gps_df['Session Date'] = pd.to_datetime(gps_df['Session Date']).dt.date
-    wellness_df['Date'] = pd.to_datetime(wellness_df['Date'])
+    wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date'])
 
     # Merge gps_df with roster_df to get the Position data
     filtered_gps = pd.merge(gps_df, roster_df[['Player Name', 'Position']], on='Player Name', how='left')
 
     # Streamlit UI Components
-    st.title('Daily Session Report')
+    st.markdown(
+        """
+        <style>
+        .report-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0288D1;  /* Real Madrid Blue */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        </style>
+        <div class="report-title">
+           ⚽ Team Performance Report ⚽
+        </div>
+        """, unsafe_allow_html=True)
 
     # Date Range Selection
     min_date = gps_df['Session Date'].min()
@@ -149,7 +163,6 @@ def display_team_report():
         st.plotly_chart(fig_donut)
     with col2:
         st.plotly_chart(fig_total_vs_speed)
-
 
     # Section 10: KPI Distribution per Player (Box Plot)
     st.header("KPI Distribution per Player")

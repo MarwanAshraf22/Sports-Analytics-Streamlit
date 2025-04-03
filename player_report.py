@@ -5,11 +5,9 @@ from scipy import stats
 from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
-# Set the Streamlit page config as the first command in the script
-st.set_page_config(page_title="Player Performance Report", page_icon="📊", layout="wide")
+
 
 # Load data and cache it for performance
-@st.cache_data
 def load_data():
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')  # Adjust path as needed
@@ -25,7 +23,23 @@ calendar_df, gps_df, wellness_df, roster_df = load_data()
 
 # Streamlit UI Components
 def display_player_report():
-    st.title('Player Performance Report')
+
+    # Streamlit Header with Custom Styling
+    st.markdown(
+        """
+        <style>
+        .report-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0288D1;  /* Real Madrid Blue */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        </style>
+        <div class="report-title">
+        📝 Player Performance Report 📝
+        </div>
+        """, unsafe_allow_html=True)
 
     # Player Name Filter on the Main Page
     player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
@@ -41,11 +55,11 @@ def display_player_report():
 
     # Filter the data based on the selected date range and player
     filtered_gps_data = gps_df[(pd.to_datetime(gps_df['Session Date']) >= start_date) & (pd.to_datetime(gps_df['Session Date']) <= end_date)]
-    filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Date']) >= start_date) & (pd.to_datetime(wellness_df['Date']) <= end_date)]
+    filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Session Date']) >= start_date) & (pd.to_datetime(wellness_df['Session Date']) <= end_date)]
 
     # Filter data for the selected player
     player_gps_data = filtered_gps_data[filtered_gps_data['Player Name'] == player_name]
-    player_wellness_data = filtered_wellness_data[filtered_wellness_data['Players Name'] == player_name]
+    player_wellness_data = filtered_wellness_data[filtered_wellness_data['Player Name'] == player_name]
 
     # Filtered Data for Player
     player_roster = roster_df[roster_df['Player Name'] == player_name].iloc[0]
@@ -132,14 +146,14 @@ def display_player_report():
 
     with col2:
         # Create a Z-Score Wellness Plot for comparison
-        wellness_scores = player_wellness_data[['Date', 'Energy', 'Soreness', 'Sleep Quality', 'Stress', 'Total Score']]
+        wellness_scores = player_wellness_data[['Session Date', 'Energy', 'Soreness', 'Sleep Quality', 'Stress', 'Total Score']]
         wellness_scores['Z-Score Energy'] = stats.zscore(wellness_scores['Energy'])
-        fig4 = px.line(wellness_scores, x='Date', y='Z-Score Energy', title=f'Energy Z-Score for {player_name}')
+        fig4 = px.line(wellness_scores, x='Session Date', y='Z-Score Energy', title=f'Energy Z-Score for {player_name}')
         st.plotly_chart(fig4)
 
     # Display wellness data (Energy, Sleep Quality, Stress, etc.)
     st.subheader("Wellness Metrics")
-    st.write(player_wellness_data[['Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
+    st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
 
 # Run the player report display function
 display_player_report()
