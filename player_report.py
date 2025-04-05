@@ -6,7 +6,6 @@ from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
 
-
 # Load data and cache it for performance
 def load_data():
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
