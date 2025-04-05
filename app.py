@@ -72,7 +72,7 @@ st.markdown(
 st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
-# Sidebar filters
+# Sidebar: Player Name and Date Range
 with st.sidebar:
     # Player Name Filter
     player_name = st.selectbox("Select Player", player_report.roster_df['Player Name'].unique(), key="player_name_selectbox")
@@ -112,9 +112,9 @@ menu = st.sidebar.selectbox(
 if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
-    team_report.display_team_report()
+    team_report.display_team_report(player_name, start_date, end_date)
 elif menu == 'Player Report':
-    player_report.display_player_report()
+    player_report.display_player_report(player_name, start_date, end_date)
 elif menu == 'Injury Prediction':
     injury_prediction.display_injury_prediction()
 elif menu == 'Personalized Plan':
@@ -131,42 +131,3 @@ elif menu == 'Injury Prediction':
     st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
 elif menu == 'Personalized Plan':
     st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
-
-# Add responsiveness with custom CSS for small screens
-st.markdown(
-    """
-    <style>
-    @media (max-width: 800px) {
-        .title {
-            font-size: 28px;
-        }
-        .subheader {
-            font-size: 20px;
-        }
-        .content {
-            font-size: 16px;
-        }
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Loading indicator for dynamic pages (for example, on data fetching)
-def show_loading_spinner():
-    with st.spinner('Loading, please wait...'):
-        # Simulate a delay for loading data (e.g., fetching reports)
-        import time
-        time.sleep(2)
-
-# Example of implementing the loading spinner when changing pages
-if menu == 'Team Report':
-    show_loading_spinner()
-    team_report.display_team_report()
-elif menu == 'Player Report':
-    show_loading_spinner()
-    player_report.display_player_report()
-elif menu == 'Injury Prediction':
-    show_loading_spinner()
-    injury_prediction.display_injury_prediction()
-elif menu == 'Personalized Plan':
-    show_loading_spinner()
-    personalized_plan.display_personalized_plan()

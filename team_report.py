@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
-def display_team_report():
+def display_team_report(player_name, start_date, end_date):
     # Load data
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
@@ -17,35 +17,10 @@ def display_team_report():
     # Merge gps_df with roster_df to get the Position data
     filtered_gps = pd.merge(gps_df, roster_df[['Player Name', 'Position']], on='Player Name', how='left')
 
-    # Streamlit UI Components
-    st.markdown(
-        """
-        <style>
-        .report-title {
-            font-size: 36px;
-            font-weight: bold;
-            color: #506B77ff;  /* Real Madrid Blue */
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        </style>
-        <div class="report-title">
-           ⚽ Team Performance Report ⚽
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Sidebar: Date Range Selection
-    min_date = gps_df['Session Date'].min()
-    max_date = gps_df['Session Date'].max()
-    selected_date_range = st.sidebar.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date, key="team_date_range")
-    
     # Filter gps_df based on the selected date range
-    filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= selected_date_range[0]) & (filtered_gps['Session Date'] <= selected_date_range[1])]
+    filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= pd.to_datetime(start_date)) & (filtered_gps['Session Date'] <= pd.to_datetime(end_date))]
     
-    # Sidebar: Player Name Filter (optional if you need this filter in the team report)
-    player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="team_player_selectbox")
-
-    # Filter data based on selected player (if player filter is applied)
+    # Filter data based on selected player
     if player_name:
         filtered_gps = filtered_gps[filtered_gps['Player Name'] == player_name]
 

@@ -20,7 +20,7 @@ def load_data():
 calendar_df, gps_df, wellness_df, roster_df = load_data()
 
 # Streamlit UI Components
-def display_player_report():
+def display_player_report(player_name, start_date, end_date):
     # Streamlit Header with Custom Styling
     st.markdown(
         """
@@ -38,30 +38,9 @@ def display_player_report():
         </div>
         """, unsafe_allow_html=True)
 
-    # Sidebar: Player Name Filter
-    player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key=f"player_name_selectbox")
-
-    # Sidebar: Date Range Filter
-    st.sidebar.subheader("Select Date Range")
-    start_date = st.sidebar.date_input("Start Date", 
-                                       min_value=min(gps_df['Session Date']), 
-                                       max_value=max(gps_df['Session Date']), 
-                                       value=min(gps_df['Session Date']),
-                                       key=f"start_date_input")
-
-    end_date = st.sidebar.date_input("End Date", 
-                                     min_value=min(gps_df['Session Date']), 
-                                     max_value=max(gps_df['Session Date']), 
-                                     value=max(gps_df['Session Date']),
-                                     key=f"end_date_input")
-
-    # Convert the dates to the correct format for filtering
-    start_date = pd.to_datetime(start_date)
-    end_date = pd.to_datetime(end_date)
-
-    # Filter the data based on the selected date range and player
-    filtered_gps_data = gps_df[(pd.to_datetime(gps_df['Session Date']) >= start_date) & (pd.to_datetime(gps_df['Session Date']) <= end_date)]
-    filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Session Date']) >= start_date) & (pd.to_datetime(wellness_df['Session Date']) <= end_date)]
+    # Filter based on the passed player_name and date range
+    filtered_gps_data = gps_df[(pd.to_datetime(gps_df['Session Date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(gps_df['Session Date']) <= pd.to_datetime(end_date))]
+    filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Session Date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(wellness_df['Session Date']) <= pd.to_datetime(end_date))]
 
     # Filter data for the selected player
     player_gps_data = filtered_gps_data[filtered_gps_data['Player Name'] == player_name]
