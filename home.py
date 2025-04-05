@@ -3,9 +3,9 @@ from PIL import Image
 import pandas as pd
 
 # Load images
-stadium_image = Image.open('images/stadium.jpg')
-players_image = Image.open('images/legends.jpg')
-trophy_image = Image.open('images/trophies.jpg')
+stadium_image = Image.open('Images/stadium.jpg')
+players_image = Image.open('Images/legends.jpg')
+trophy_image = Image.open('Images/trophies.jpg')
 
 def display_home():
     # History of Real Madrid CF
