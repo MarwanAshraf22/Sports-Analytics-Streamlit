@@ -148,4 +148,4 @@ def display_team_report(start_date, end_date):
     fig_bubble = px.scatter(filtered_gps, x='Total Distance', y='Metres Per Minute', size='Session Time(mins)', color='Drill Name', title="Session Time vs Distance & Speed")
     st.plotly_chart(fig_bubble)
 
-display_team_report(start_date, end_date)
+display_team_report()
