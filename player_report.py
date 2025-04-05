@@ -6,6 +6,7 @@ from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
 # Load data and cache it for performance
+@st.cache
 def load_data():
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')  # Adjust path as needed
@@ -85,7 +86,6 @@ def display_player_report(player_name, start_date, end_date):
         avg_wellness_score = player_wellness_data['Total Score'].mean()
         st.metric("Average Wellness Score", f"{avg_wellness_score:.2f}", delta=None)
 
-
     # Display performance metrics (Total Distance, Session Time, etc.)
     st.subheader("Performance Metrics")
     st.write(player_gps_data[['Session Date', 'Total Distance', 'High Speed Running', 'Session Time(mins)']])
@@ -141,5 +141,10 @@ def display_player_report(player_name, start_date, end_date):
     st.subheader("Wellness Metrics")
     st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
 
+# Streamlit UI to select player and date range
+player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
+start_date = st.date_input("Start Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
+end_date = st.date_input("End Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
+
 # Run the player report display function
-display_player_report()
+display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)
