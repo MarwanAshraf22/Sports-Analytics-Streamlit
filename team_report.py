@@ -18,15 +18,15 @@ def load_data():
 calendar_df, gps_df, wellness_df, roster_df = load_data()
 
 def display_team_report(start_date, end_date):
-    
+    # Convert 'Session Date' to datetime.date for comparison
     gps_df['Session Date'] = pd.to_datetime(gps_df['Session Date']).dt.date
-    wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date'])
-
-    # Merge gps_df with roster_df to get the Position data
-    filtered_gps = pd.merge(gps_df, roster_df[['Player Name', 'Position']], on='Player Name', how='left')
+    wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date']).dt.date
 
     # Filter gps_df based on the selected date range
-    filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= pd.to_datetime(start_date)) & (filtered_gps['Session Date'] <= pd.to_datetime(end_date))]
+    filtered_gps = gps_df[(gps_df['Session Date'] >= start_date) & (gps_df['Session Date'] <= end_date)]
+
+    # Merge gps_df with roster_df to get the Position data
+    filtered_gps = pd.merge(filtered_gps, roster_df[['Player Name', 'Position']], on='Player Name', how='left')
 
     # Section 1: Total Session Stats with Metric Cards
     st.header("Session Stats")
