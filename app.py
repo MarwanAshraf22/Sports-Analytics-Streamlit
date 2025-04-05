@@ -5,9 +5,16 @@ import team_report
 import player_report
 import injury_prediction
 import personalized_plan
+import pandas as pd
 
 # Load the logo
 logo = Image.open('Images/Logo.png')
+
+# Load the data
+calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
+gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
+wellness_df = pd.read_csv('data/wellness_preprocessed.csv')
+roster_df = pd.read_csv('data/roster_preprocessed.csv')
 
 # Add custom CSS for styling
 st.markdown(
@@ -75,21 +82,16 @@ st.sidebar.image(logo, use_container_width=True)
 # Sidebar: Player Name and Date Range
 with st.sidebar:
     # Player Name Filter
-    player_name = st.selectbox("Select Player", player_report.roster_df['Player Name'].unique(), key="player_name_selectbox")
+    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
 
     # Date Range Filter
     st.subheader("Select Date Range")
-    start_date = st.date_input("Start Date", 
-                               min_value=min(player_report.gps_df['Session Date']), 
-                               max_value=max(player_report.gps_df['Session Date']), 
-                               value=min(player_report.gps_df['Session Date']),
-                               key="start_date_input")
+    min_date = gps_df['Session Date'].min()
+    max_date = gps_df['Session Date'].max()
+    selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date)
 
-    end_date = st.date_input("End Date", 
-                             min_value=min(player_report.gps_df['Session Date']), 
-                             max_value=max(player_report.gps_df['Session Date']), 
-                             value=max(player_report.gps_df['Session Date']),
-                             key="end_date_input")
+# Extract start and end dates from the range
+start_date, end_date = selected_date_range
 
 # Define the icons for each menu option
 icons = {
@@ -112,9 +114,9 @@ menu = st.sidebar.selectbox(
 if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
-    team_report.display_team_report(start_date=start_date, end_date=end_date)
+    team_report.display_team_report(start_date=start_date, end_date=end_date)  # Pass start and end dates separately
 elif menu == 'Player Report':
-    player_report.display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)
+    player_report.display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)  # Pass start and end dates separately
 elif menu == 'Injury Prediction':
     injury_prediction.display_injury_prediction()
 elif menu == 'Personalized Plan':

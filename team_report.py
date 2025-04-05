@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
-def display_team_report(start_date=None, end_date=None):
+def display_team_report(start_date, end_date):
     # Load data
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
@@ -85,6 +85,12 @@ def display_team_report(start_date=None, end_date=None):
     
     # Player comparison: Total Distance vs Speed
     fig_comparison = px.bar(player_data, x='Player Name', y=['Total Distance', 'Maximum Speed'], barmode='group', title="Player Comparison: Total Distance vs Speed")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(fig_drill)
+    with col2:
+        st.plotly_chart(fig_comparison)
 
     col1, col2 = st.columns(2)
     with col1:
