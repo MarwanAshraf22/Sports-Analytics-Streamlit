@@ -46,16 +46,16 @@ def display_player_report():
     # Date Range Filter on the Main Page
     st.subheader("Select Date Range")
     start_date = st.date_input("Start Date", 
-                               min_value=min(gps_df['Session Date']), 
-                               max_value=max(gps_df['Session Date']), 
-                               value=min(gps_df['Session Date']),
-                               key="start_date_input")
+                           min_value=min(gps_df['Session Date']), 
+                           max_value=max(gps_df['Session Date']), 
+                           value=min(gps_df['Session Date']),
+                           key="start_date_input_unique")
 
     end_date = st.date_input("End Date", 
-                             min_value=min(gps_df['Session Date']), 
-                             max_value=max(gps_df['Session Date']), 
-                             value=max(gps_df['Session Date']),
-                             key="end_date_input")
+                            min_value=min(gps_df['Session Date']), 
+                            max_value=max(gps_df['Session Date']), 
+                            value=max(gps_df['Session Date']),
+                            key="end_date_input_unique")
 
     # Convert the dates to the correct format for filtering
     start_date = pd.to_datetime(start_date)
