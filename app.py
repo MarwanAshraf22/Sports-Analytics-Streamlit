@@ -112,7 +112,7 @@ menu = st.sidebar.selectbox(
 if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
-    team_report.display_team_report(player_name=player_name, start_date=start_date, end_date=end_date)
+    team_report.display_team_report(start_date=start_date, end_date=end_date)
 elif menu == 'Player Report':
     player_report.display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)
 elif menu == 'Injury Prediction':
