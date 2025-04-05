@@ -34,17 +34,20 @@ def display_team_report():
         </div>
         """, unsafe_allow_html=True)
 
-    # Date Range Selection
+    # Sidebar: Date Range Selection
     min_date = gps_df['Session Date'].min()
     max_date = gps_df['Session Date'].max()
-    selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date, key="team_date_range")
+    selected_date_range = st.sidebar.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date, key="team_date_range")
     
     # Filter gps_df based on the selected date range
     filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= selected_date_range[0]) & (filtered_gps['Session Date'] <= selected_date_range[1])]
     
-    # Drill name filter: Only keep specific drills
-    drill_names_to_include = ['Entire Session', 'SSG 5v5', 'Possession Drill', 'Warm Up', 'Finishing Drill']
-    filtered_gps = filtered_gps[filtered_gps['Drill Name'].isin(drill_names_to_include)]
+    # Sidebar: Player Name Filter (optional if you need this filter in the team report)
+    player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="team_player_selectbox")
+
+    # Filter data based on selected player (if player filter is applied)
+    if player_name:
+        filtered_gps = filtered_gps[filtered_gps['Player Name'] == player_name]
 
     # Section 1: Total Session Stats with Metric Cards
     st.header("Session Stats")

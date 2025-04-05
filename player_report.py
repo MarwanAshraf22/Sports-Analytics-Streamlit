@@ -5,7 +5,6 @@ from scipy import stats
 from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
-
 # Load data and cache it for performance
 def load_data():
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
@@ -22,7 +21,6 @@ calendar_df, gps_df, wellness_df, roster_df = load_data()
 
 # Streamlit UI Components
 def display_player_report():
-
     # Streamlit Header with Custom Styling
     st.markdown(
         """
@@ -40,22 +38,22 @@ def display_player_report():
         </div>
         """, unsafe_allow_html=True)
 
-    # Player Name Filter on the Main Page
-    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique(), key=f"player_name_selectbox")
+    # Sidebar: Player Name Filter
+    player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key=f"player_name_selectbox")
 
-    # Date Range Filter on the Main Page
-    st.subheader("Select Date Range")
-    start_date = st.date_input("Start Date", 
-                           min_value=min(gps_df['Session Date']), 
-                           max_value=max(gps_df['Session Date']), 
-                           value=min(gps_df['Session Date']),
-                           key=f"start_date_input")
+    # Sidebar: Date Range Filter
+    st.sidebar.subheader("Select Date Range")
+    start_date = st.sidebar.date_input("Start Date", 
+                                       min_value=min(gps_df['Session Date']), 
+                                       max_value=max(gps_df['Session Date']), 
+                                       value=min(gps_df['Session Date']),
+                                       key=f"start_date_input")
 
-    end_date = st.date_input("End Date", 
-                            min_value=min(gps_df['Session Date']), 
-                            max_value=max(gps_df['Session Date']), 
-                            value=max(gps_df['Session Date']),
-                            key=f"end_date_input")
+    end_date = st.sidebar.date_input("End Date", 
+                                     min_value=min(gps_df['Session Date']), 
+                                     max_value=max(gps_df['Session Date']), 
+                                     value=max(gps_df['Session Date']),
+                                     key=f"end_date_input")
 
     # Convert the dates to the correct format for filtering
     start_date = pd.to_datetime(start_date)
@@ -107,6 +105,7 @@ def display_player_report():
     with col2:
         avg_wellness_score = player_wellness_data['Total Score'].mean()
         st.metric("Average Wellness Score", f"{avg_wellness_score:.2f}", delta=None)
+
 
     # Display performance metrics (Total Distance, Session Time, etc.)
     st.subheader("Performance Metrics")
