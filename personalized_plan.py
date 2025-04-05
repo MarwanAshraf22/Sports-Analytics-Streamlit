@@ -10,9 +10,6 @@ import io
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Set up the Streamlit page
-st.set_page_config(page_title="Real Madrid Player Tool", layout="wide")
-
 # Function to calculate BMI
 def calculate_bmi(weight, height):
     if weight > 0 and height > 0:
