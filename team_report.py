@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
-def display_team_report(start_date, end_date):
+def display_team_report(start_date=None, end_date=None):
     # Load data
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
