@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
-def display_team_report(player_name, start_date, end_date):
+def display_team_report(start_date, end_date):
     # Load data
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
@@ -19,10 +19,6 @@ def display_team_report(player_name, start_date, end_date):
 
     # Filter gps_df based on the selected date range
     filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= pd.to_datetime(start_date)) & (filtered_gps['Session Date'] <= pd.to_datetime(end_date))]
-    
-    # Filter data based on selected player
-    if player_name:
-        filtered_gps = filtered_gps[filtered_gps['Player Name'] == player_name]
 
     # Section 1: Total Session Stats with Metric Cards
     st.header("Session Stats")
@@ -152,4 +148,4 @@ def display_team_report(player_name, start_date, end_date):
     fig_bubble = px.scatter(filtered_gps, x='Total Distance', y='Metres Per Minute', size='Session Time(mins)', color='Drill Name', title="Session Time vs Distance & Speed")
     st.plotly_chart(fig_bubble)
 
-display_team_report()
+display_team_report(start_date, end_date)
