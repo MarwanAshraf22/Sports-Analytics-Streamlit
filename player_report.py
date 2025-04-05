@@ -41,7 +41,7 @@ def display_player_report():
         """, unsafe_allow_html=True)
 
     # Player Name Filter on the Main Page
-    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique(),key="player_name_selectbox_unique")
+    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique(), key=f"player_name_selectbox_{player_name}")
 
     # Date Range Filter on the Main Page
     st.subheader("Select Date Range")
@@ -49,13 +49,13 @@ def display_player_report():
                            min_value=min(gps_df['Session Date']), 
                            max_value=max(gps_df['Session Date']), 
                            value=min(gps_df['Session Date']),
-                           key="start_date_input_unique")
+                           key=f"start_date_input_{player_name}")
 
     end_date = st.date_input("End Date", 
                             min_value=min(gps_df['Session Date']), 
                             max_value=max(gps_df['Session Date']), 
                             value=max(gps_df['Session Date']),
-                            key="end_date_input_unique")
+                            key=f"end_date_input_{player_name}")
 
     # Convert the dates to the correct format for filtering
     start_date = pd.to_datetime(start_date)
