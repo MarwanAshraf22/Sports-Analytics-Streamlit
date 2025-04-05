@@ -38,7 +38,7 @@ def display_team_report():
     min_date = gps_df['Session Date'].min()
     max_date = gps_df['Session Date'].max()
     selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date
-                                        ,key = "<uniquevalueofsomesort>")
+                                        ,key = "<unique_date_range>")
     
     # Filter gps_df based on the selected date range
     filtered_gps = filtered_gps[(filtered_gps['Session Date'] >= selected_date_range[0]) & (filtered_gps['Session Date'] <= selected_date_range[1])]
