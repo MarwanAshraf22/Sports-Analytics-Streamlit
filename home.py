@@ -13,17 +13,33 @@ def display_home():
         """
         <style>
         .report-title {
-            font-size: 36px;
-            font-weight: bold;
+            font-size: 42px;
+            font-weight: 800;
             color: #AD9B30ff;  /* Real Madrid Blue */
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .subheader {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-top: 40px;
+        }
+        .content {
+            font-size: 18px;
+            color: #34495E;
+            line-height: 1.6; /* Improve text readability */
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.3s ease-in-out;
         }
         </style>
         <div class="report-title">
         ⏳ History of Real Madrid CF ⏳
         </div>
         """, unsafe_allow_html=True)
+    
     st.write("""**Real Madrid Club de Fútbol** is a legendary football club based in Madrid, Spain, founded in **1902**. The club has grown into one of the most successful and prestigious in the world, known for its success both in Spain and internationally.""")
 
     # Display Stadium Image
@@ -37,7 +53,7 @@ def display_home():
     """)
 
     # Resize Legends Image
-    players_image_resized = players_image.resize((players_image.width, 400))  # Adjust height to 400px
+    players_image_resized = players_image.resize((players_image.width, 400))
     st.image(players_image_resized, caption="Real Madrid Legends", use_container_width=True)
 
     # Achievements Table
@@ -51,10 +67,10 @@ def display_home():
     df = pd.DataFrame(achievements_data)
 
     st.markdown('<div class="subheader">Achievements</div>', unsafe_allow_html=True)
-    st.table(df)
+    st.dataframe(df, width=800)
 
     # Resize Trophy Image
-    trophy_image_resized = trophy_image.resize((trophy_image.width, 1000))  # Adjust height to 400px
+    trophy_image_resized = trophy_image.resize((trophy_image.width, 1000))
     st.image(trophy_image_resized, caption="Real Madrid Trophies", use_container_width=True)
 
     # Global Phenomenon Section
@@ -66,4 +82,5 @@ def display_home():
 
     # Embed YouTube Video
     st.markdown('<div class="subheader">Watch Real Madrid’s Story</div>', unsafe_allow_html=True)
+    st.write("Discover the legendary moments that made Real Madrid the greatest football club in history. Watch the story of their triumphs, legends, and fans!")
     st.video("https://www.youtube.com/watch?v=ctm_eJ6wcGs&ab_channel=GoalZone")
