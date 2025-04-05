@@ -9,9 +9,6 @@ import personalized_plan
 # Load the logo
 logo = Image.open('Images/Logo.png')
 
-# Set page configuration
-st.set_page_config(page_title="Real Madrid CF History", page_icon=logo, layout='wide')
-
 # Add custom CSS for styling
 st.markdown(
     """
