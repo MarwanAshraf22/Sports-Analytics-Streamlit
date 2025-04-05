@@ -72,6 +72,25 @@ st.markdown(
 st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
+# Sidebar filters
+with st.sidebar:
+    # Player Name Filter
+    player_name = st.selectbox("Select Player", player_report.roster_df['Player Name'].unique(), key="player_name_selectbox")
+
+    # Date Range Filter
+    st.subheader("Select Date Range")
+    start_date = st.date_input("Start Date", 
+                               min_value=min(player_report.gps_df['Session Date']), 
+                               max_value=max(player_report.gps_df['Session Date']), 
+                               value=min(player_report.gps_df['Session Date']),
+                               key="start_date_input")
+
+    end_date = st.date_input("End Date", 
+                             min_value=min(player_report.gps_df['Session Date']), 
+                             max_value=max(player_report.gps_df['Session Date']), 
+                             value=max(player_report.gps_df['Session Date']),
+                             key="end_date_input")
+
 # Define the icons for each menu option
 icons = {
     'Home': '🏠',
