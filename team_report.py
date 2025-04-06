@@ -18,6 +18,22 @@ def load_data():
 calendar_df, gps_df, wellness_df, roster_df = load_data()
 
 def display_team_report(start_date, end_date):
+
+    st.markdown(
+    """
+    <style>
+    .report-title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #2B2D3Fff;  /* Real Madrid Blue */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    </style>
+    <div class="report-title">
+    📊 Team Report 📊
+    </div>
+    """, unsafe_allow_html=True)
     
     gps_df['Session Date'] = pd.to_datetime(gps_df['Session Date']).dt.date
     wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date']).dt.date
@@ -100,18 +116,12 @@ def display_team_report(start_date, end_date):
     with col2:
         st.plotly_chart(fig_comparison, key="comparison_chart")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.plotly_chart(fig_drill, key="drill_chart_2")  # Unique key
-    with col2:
-        st.plotly_chart(fig_comparison, key="comparison_chart_2")  # Unique key
-
     # Section 4: Position & Drill Comparison (Avg Distance by Position and Drill)
     st.header("Avg Total Distance by Position & Drill")
     position_drill_data = filtered_gps.groupby(['Position', 'Drill Name']).agg({'Total Distance': 'mean'}).reset_index()
 
     # Bar chart for avg distance by position and drill
-    fig_position_drill = px.bar(position_drill_data, x='Position', y='Total Distance', color='Drill Name', barmode='group', title="Avg Total Distance by Position & Drill")
+    fig_position_drill = px.bar(position_drill_data, x='Position', y='Total Distance', color='Drill Name', barmode='group')
     st.plotly_chart(fig_position_drill, key="position_drill_chart")
 
     # Section 5: % Game TD & HSR Comparison
@@ -154,12 +164,12 @@ def display_team_report(start_date, end_date):
 
     # Section 10: KPI Distribution per Player (Box Plot)
     st.header("KPI Distribution per Player")
-    fig_kpi_distribution = px.box(filtered_gps, x='Player Name', y='Total Distance', title="KPI Distribution: Total Distance by Player")
+    fig_kpi_distribution = px.box(filtered_gps, x='Player Name', y='Total Distance')
     st.plotly_chart(fig_kpi_distribution, key="kpi_distribution_chart")
 
     # Section 15: Session Time vs Distance (Bubble Chart)
     st.header("Session Time vs Distance & Speed")
-    fig_bubble = px.scatter(filtered_gps, x='Total Distance', y='Metres Per Minute', size='Session Time(mins)', color='Drill Name', title="Session Time vs Distance & Speed")
+    fig_bubble = px.scatter(filtered_gps, x='Total Distance', y='Metres Per Minute', size='Session Time(mins)', color='Drill Name')
     st.plotly_chart(fig_bubble, key="bubble_chart")
 
 start_date = st.date_input("Start Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))

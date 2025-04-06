@@ -42,7 +42,7 @@ def display_personalized_plan():
         .report-title {
             font-size: 40px;
             font-weight: bold;
-            color: #003399;
+            color: #373433ff;
             text-align: center;
             padding-bottom: 10px;
         }

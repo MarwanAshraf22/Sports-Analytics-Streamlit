@@ -79,19 +79,6 @@ st.markdown(
 st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
-# Sidebar: Player Name and Date Range
-with st.sidebar:
-    # Player Name Filter
-    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
-
-    # Date Range Filter
-    st.subheader("Select Date Range")
-    min_date = gps_df['Session Date'].min()
-    max_date = gps_df['Session Date'].max()
-    selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date)
-
-# Extract start and end dates from the range
-start_date, end_date = selected_date_range
 
 # Define the icons for each menu option
 icons = {
@@ -122,6 +109,7 @@ elif menu == 'Injury Prediction':
 elif menu == 'Personalized Plan':
     personalized_plan.display_personalized_plan()
 
+
 # Sidebar active state styling
 if menu == 'Home':
     st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
@@ -133,3 +121,18 @@ elif menu == 'Injury Prediction':
     st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
 elif menu == 'Personalized Plan':
     st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
+
+# Sidebar: Player Name and Date Range
+with st.sidebar:
+    
+    # Player Name Filter
+    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
+
+    # Date Range Filter
+    st.subheader("Select Date Range")
+    min_date = gps_df['Session Date'].min()
+    max_date = gps_df['Session Date'].max()
+    selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date)
+
+# Extract start and end dates from the range
+start_date, end_date = selected_date_range
