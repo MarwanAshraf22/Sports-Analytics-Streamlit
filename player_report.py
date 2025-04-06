@@ -118,24 +118,30 @@ def display_player_report(player_name, start_date, end_date):
     }
     performance_df = pd.DataFrame(performance_data)
 
-    # Create Bar Chart
-    fig = px.bar(performance_df, x='Metric', y='Carvajal', title='Performance Metrics Comparison')
+    # Create Bar Chart with Real Madrid Blue color
+    fig = px.bar(performance_df, x='Metric', y='Carvajal', 
+                 title='Performance Metrics Comparison',
+                 color_discrete_sequence=['#0288D1'])  # Real Madrid Blue
     st.plotly_chart(fig)
 
     # Create side-by-side visualizations
     col1, col2 = st.columns(2)
     with col1:
+        # Scatter plot for High Speed Running vs Session Time
         fig = px.scatter(player_gps_data, x='Session Date', y='High Speed Running',
                          title=f'High Speed Running vs Session Time for {player_name}',
                          labels={'Session Date': 'Date', 'High Speed Running': 'High Speed Running (m)'},
-                         color='High Speed Running', color_continuous_scale='Viridis')  # Color scheme improvement
+                         color='High Speed Running', color_continuous_scale=['#0288D1', '#81D4FA'])  # Blue shades
         st.plotly_chart(fig)
 
     with col2:
-        # Create a Z-Score Wellness Plot for comparison
+        # Create a Z-Score Wellness Plot for Energy
         wellness_scores = player_wellness_data[['Session Date', 'Energy', 'Soreness', 'Sleep Quality', 'Stress', 'Total Score']]
         wellness_scores['Z-Score Energy'] = stats.zscore(wellness_scores['Energy'])
-        fig4 = px.line(wellness_scores, x='Session Date', y='Z-Score Energy', title=f'Energy Z-Score for {player_name}')
+        fig4 = px.line(wellness_scores, x='Session Date', y='Z-Score Energy', 
+                       title=f'Energy Z-Score for {player_name}', 
+                       line_shape='linear', 
+                       color_discrete_sequence=['#0288D1'])  # Real Madrid Blue
         st.plotly_chart(fig4)
 
     # Display wellness data (Energy, Sleep Quality, Stress, etc.)
