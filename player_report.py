@@ -118,17 +118,10 @@ def display_player_report(player_name, start_date, end_date):
     }
     performance_df = pd.DataFrame(performance_data)
 
-    # Define custom colors for each bar
-    bar_colors = ['#0288D1', '#FFB300', '#81D4FA', '#FF7043']  # Example: Real Madrid Blue, Gold, Light Blue, and Red
-
-    # Create Bar Chart with different colors for each bar
+    # Create Bar Chart 
     fig = px.bar(performance_df, x='Metric', y='Carvajal', 
-                title='Performance Metrics Comparison',
-                color=performance_df['Metric'],  # Color by 'Metric' to apply different colors
-                color_discrete_map={
-                    'Metric': dict(zip(performance_df['Metric'], bar_colors))  # Map each metric to a specific color
-                })
-
+                 title='Performance Metrics Comparison',
+                 color_discrete_sequence=['#0288D1'])  # Real Madrid Blue
     st.plotly_chart(fig)
 
     # Create side-by-side visualizations
