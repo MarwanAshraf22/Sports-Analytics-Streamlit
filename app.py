@@ -79,6 +79,15 @@ st.markdown(
 st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
+# Define the icons for each menu option
+icons = {
+    'Home': '🏠',
+    'Team Report': '👥',
+    'Player Report': '⚽',
+    'Injury Prediction': '🤕',
+    'Personalized Plan': '📝'
+}
+
 # Sidebar Menu (Move this block after the date range and player selection)
 menu = st.sidebar.selectbox(
     'Choose an option:',
@@ -86,6 +95,7 @@ menu = st.sidebar.selectbox(
     format_func=lambda x: f"{icons[x]} {x}",  # Add icon to the option label
     index=1  # Set default to Team Report for initial selection
 )
+
 
 # Sidebar: Date Range Filter and Player Name
 with st.sidebar:
@@ -101,14 +111,7 @@ with st.sidebar:
 # Extract start and end dates from the range
 start_date, end_date = selected_date_range
 
-# Define the icons for each menu option
-icons = {
-    'Home': '🏠',
-    'Team Report': '👥',
-    'Player Report': '⚽',
-    'Injury Prediction': '🤕',
-    'Personalized Plan': '📝'
-}
+
 
 # Display content based on menu selection
 if menu == 'Home':
