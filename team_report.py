@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
+@st.cache_data
 def load_data():
     calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
     gps_df = pd.read_csv('data/gps_data_preprocessed.csv')  # Adjust path as needed
