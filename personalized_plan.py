@@ -131,7 +131,11 @@ def display_personalized_plan():
 
 
             user_prompt = f"""
-            📌 **Instruction**: Analyze the player's data below and generate a detailed plan using the same structure and tone as the example. Always format your response in markdown.
+            📌 **Instruction**: 
+
+            1. Begin by providing a clear, concise explanation of the player’s physical and performance data. Explain what each key metric means for the player’s health and performance in supportive and easy-to-understand language.
+
+            2. Then, generate a detailed, structured personalized training, recovery, and diet plan based on the player’s data. Follow the exact format, structure, and tone shown in the example below.
 
             ---
 
@@ -197,14 +201,15 @@ def display_personalized_plan():
             ---
 
             📌 **Guidelines**:
-            - Be detailed but concise.
-            - Use bullet points for clarity.
-            - Follow the exact structure shown in the example.
-            - Tailor recommendations to the player’s data.
-            - Keep tone professional, supportive, and motivating.
+            - Start with a paragraph interpreting the player’s physical and performance data.
+            - Use bullet points for the plan sections.
+            - Maintain professional, motivating, and clear tone.
+            - Use markdown formatting throughout.
+            - Be concise but informative.
 
-            *** Now generate the plan using the structure above. ***
+            *** Now generate the data interpretation and the personalized plan. ***
             """
+
 
 
             stream = client.chat.completions.create(
