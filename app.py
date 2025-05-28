@@ -68,11 +68,6 @@ selected_date_range = st.sidebar.date_input(
 player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="select_player")
 start_date, end_date = selected_date_range
 
-# Optional: Button to reset to home (with rerun)
-if st.sidebar.button("🏠 Go to Home"):
-    st.experimental_set_query_params(page="Home")
-    st.rerun()
-
 # Route to pages
 if menu == 'Home':
     home.display_home()
