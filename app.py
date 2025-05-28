@@ -18,7 +18,7 @@ gps_df['Session Date'] = pd.to_datetime(gps_df['Session Date'], dayfirst=True, e
 gps_df['High Speed Running'] = gps_df['Distance Zone 5'] + gps_df['Distance Zone 6']
 
 wellness_df = pd.read_csv('data/wellness_preprocessed.csv')
-wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date'], dayfirst=True, errors='coerce')
+wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date'])
 
 roster_df = pd.read_csv('data/roster_preprocessed.csv')
 
@@ -57,24 +57,35 @@ menu = st.sidebar.selectbox(
     format_func=lambda x: f"{icons[x]} {x}"
 )
 
-# Sidebar: Filters
-st.sidebar.subheader("Select Date Range")
-min_date = gps_df['Session Date'].min().date()
-max_date = gps_df['Session Date'].max().date()
-selected_date_range = st.sidebar.date_input(
-    "Date Range", [min_date, max_date], min_value=min_date, max_value=max_date
-)
+# Sidebar: Show filters only for Team Report and Player Report
+start_date = end_date = player_name = None
+if menu in ['Team Report', 'Player Report']:
+    st.sidebar.subheader("Select Date Range")
+    min_date = gps_df['Session Date'].min().date()
+    max_date = gps_df['Session Date'].max().date()
+    default_range = [min_date, max_date]
 
-player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="select_player")
-start_date, end_date = selected_date_range
+    selected_date_range = st.sidebar.date_input(
+        "Date Range",
+        value=default_range,
+        min_value=min_date,
+        max_value=max_date
+    )
+
+    start_date, end_date = selected_date_range
+  
+
+    player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="select_player")
 
 # Route to pages
 if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
-    team_report.display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
+    if start_date and end_date:
+        team_report.display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Player Report':
-    player_report.display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
+    if start_date and end_date:
+        player_report.display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Injury Prediction':
     injury_prediction.display_injury_prediction()
 elif menu == 'Personalized Plan':
