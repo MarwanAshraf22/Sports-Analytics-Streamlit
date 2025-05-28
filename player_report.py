@@ -5,24 +5,8 @@ from scipy import stats
 from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
-
-@st.cache_data
-# Load data and cache it for performance
-def load_data():
-    calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
-    gps_df = pd.read_csv('data/gps_data_preprocessed.csv')  # Adjust path as needed
-    wellness_df = pd.read_csv('data/wellness_preprocessed.csv')  # Adjust path as needed
-    roster_df = pd.read_csv('data/roster_preprocessed.csv')  # Adjust path as needed
-    
-    # Calculate the metrics (HSR)
-    gps_df['High Speed Running'] = gps_df['Distance Zone 5'] + gps_df['Distance Zone 6']
-    
-    return calendar_df, gps_df, wellness_df, roster_df
-
-calendar_df, gps_df, wellness_df, roster_df = load_data()
-
 # Streamlit UI Components
-def display_player_report(player_name, start_date, end_date):
+def display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df):
     # Streamlit Header with Custom Styling
     st.markdown(
         """
@@ -147,11 +131,3 @@ def display_player_report(player_name, start_date, end_date):
     # Display wellness data (Energy, Sleep Quality, Stress, etc.)
     st.subheader("Wellness Metrics")
     st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
-
-# Streamlit UI to select player and date range
-player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
-start_date = st.date_input("Start Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
-end_date = st.date_input("End Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
-
-# Run the player report display function
-display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)

@@ -4,21 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
-@st.cache_data
-def load_data():
-    calendar_df = pd.read_csv('data/calendar_preprocessed.csv')  # Adjust path as needed
-    gps_df = pd.read_csv('data/gps_data_preprocessed.csv')  # Adjust path as needed
-    wellness_df = pd.read_csv('data/wellness_preprocessed.csv')  # Adjust path as needed
-    roster_df = pd.read_csv('data/roster_preprocessed.csv')  # Adjust path as needed
-    
-    # Calculate the metrics (HSR)
-    gps_df['High Speed Running'] = gps_df['Distance Zone 5'] + gps_df['Distance Zone 6']
-    
-    return calendar_df, gps_df, wellness_df, roster_df
-
-calendar_df, gps_df, wellness_df, roster_df = load_data()
-
-def display_team_report(start_date, end_date):
+def display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df):
 
     st.markdown(
     """
@@ -172,8 +158,3 @@ def display_team_report(start_date, end_date):
     st.header("Session Time vs Distance & Speed")
     fig_bubble = px.scatter(filtered_gps, x='Total Distance', y='Metres Per Minute', size='Session Time(mins)', color='Drill Name')
     st.plotly_chart(fig_bubble, key="bubble_chart")
-
-start_date = st.date_input("Start Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
-end_date = st.date_input("End Date", min_value=min(gps_df['Session Date']), max_value=max(gps_df['Session Date']))
-
-display_team_report(start_date, end_date)

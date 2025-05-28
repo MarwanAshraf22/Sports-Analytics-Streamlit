@@ -56,6 +56,3 @@ def display_injury_prediction():
                     st.error("🔥 **High Injury Risk!** Reduce intensity and prioritize recovery.")
                 else:
                     st.success("✅ **Low Injury Risk!** Keep up the great work.")
-
-# Run the UI
-display_injury_prediction()

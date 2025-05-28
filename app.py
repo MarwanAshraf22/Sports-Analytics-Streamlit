@@ -7,20 +7,24 @@ import injury_prediction
 import personalized_plan
 import pandas as pd
 
-# Load the logo
+# Load logo
 logo = Image.open('Images/Logo.png')
 
-# Load the data
+# Load data
 calendar_df = pd.read_csv('data/calendar_preprocessed.csv')
+
 gps_df = pd.read_csv('data/gps_data_preprocessed.csv')
+gps_df['Session Date'] = pd.to_datetime(gps_df['Session Date'], dayfirst=True, errors='coerce')
+gps_df['High Speed Running'] = gps_df['Distance Zone 5'] + gps_df['Distance Zone 6']
+
 wellness_df = pd.read_csv('data/wellness_preprocessed.csv')
+wellness_df['Session Date'] = pd.to_datetime(wellness_df['Session Date'], dayfirst=True, errors='coerce')
+
 roster_df = pd.read_csv('data/roster_preprocessed.csv')
 
-# Add custom CSS for styling
-st.markdown(
-    """
+# Custom CSS
+st.markdown("""
     <style>
-    /* General styles */
     .title {
         font-size: 36px;
         font-weight: bold;
@@ -28,58 +32,18 @@ st.markdown(
         text-align: center;
         padding-top: 20px;
     }
-    .subheader {
-        font-size: 24px;
-        font-weight: 600;
-        color: #2C3E50;
-        margin-top: 30px;
-    }
-    .content {
-        font-size: 18px;
-        color: #34495E;
-    }
-    .card {
-        border: 1px solid #ccc;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        margin-bottom: 20px;
-    }
-    .video {
-        width: 100%;
-        height: 500px;
-    }
-    .sidebar .sidebar-content {
-        background-color: #F7F7F7;
-        padding-top: 20px;
-    }
-
-    /* Active Sidebar Item */
     .sidebar .stSelected {
         background-color: #DFF0FF;
         border-radius: 8px;
     }
-
-    /* Make Streamlit's main container use the entire width */
-    .css-1l6n45h {
-        max-width: 100%;
-        margin: 0 auto;
-    }
-
-    /* Card hover effect */
-    .card:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        transition: box-shadow 0.3s ease-in-out;
-    }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# Add Title and Sidebar Image
-st.markdown('<div class="title">Real Madrid Club de Fútbol</div>', unsafe_allow_html=True)
+# App Title
+st.markdown('<div class="title">Dubai Club For People Of Determination</div>', unsafe_allow_html=True)
 st.sidebar.image(logo, use_container_width=True)
 
-# Define the icons for each menu option
+# Sidebar: Navigation menu
 icons = {
     'Home': '🏠',
     'Team Report': '👥',
@@ -87,52 +51,36 @@ icons = {
     'Injury Prediction': '🤕',
     'Personalized Plan': '📝'
 }
-
-# Sidebar Menu (Move this block after the date range and player selection)
 menu = st.sidebar.selectbox(
     'Choose an option:',
     ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan'),
-    format_func=lambda x: f"{icons[x]} {x}",  # Add icon to the option label
-    index=1  # Set default to Team Report for initial selection
+    format_func=lambda x: f"{icons[x]} {x}"
 )
 
+# Sidebar: Filters
+st.sidebar.subheader("Select Date Range")
+min_date = gps_df['Session Date'].min().date()
+max_date = gps_df['Session Date'].max().date()
+selected_date_range = st.sidebar.date_input(
+    "Date Range", [min_date, max_date], min_value=min_date, max_value=max_date
+)
 
-# Sidebar: Date Range Filter and Player Name
-with st.sidebar:
-    # Date Range Filter (Move this here after the menu)
-    st.subheader("Select Date Range")
-    min_date = gps_df['Session Date'].min()
-    max_date = gps_df['Session Date'].max()
-    selected_date_range = st.date_input("Select Date Range", [min_date, max_date], min_value=min_date, max_value=max_date)
-
-    # Player Name Filter (Move this here after the date range filter)
-    player_name = st.selectbox("Select Player", roster_df['Player Name'].unique())
-
-# Extract start and end dates from the range
+player_name = st.sidebar.selectbox("Select Player", roster_df['Player Name'].unique(), key="select_player")
 start_date, end_date = selected_date_range
 
+# Optional: Button to reset to home (with rerun)
+if st.sidebar.button("🏠 Go to Home"):
+    st.experimental_set_query_params(page="Home")
+    st.rerun()
 
-
-# Display content based on menu selection
+# Route to pages
 if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
-    team_report.display_team_report(start_date=start_date, end_date=end_date)  # Pass start and end dates separately
+    team_report.display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Player Report':
-    player_report.display_player_report(player_name=player_name, start_date=start_date, end_date=end_date)  # Pass start and end dates separately
+    player_report.display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Injury Prediction':
     injury_prediction.display_injury_prediction()
 elif menu == 'Personalized Plan':
     personalized_plan.display_personalized_plan()
-
-# Sidebar active state styling
-if menu == 'Home':
-    st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
-elif menu == 'Team Report':
-    st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
-elif menu == 'Player Report':
-    st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
-elif menu == 'Injury Prediction':
-    st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)
-elif menu == 'Personalized Plan':
-    st.sidebar.markdown("<style>.stSelected {background-color: #DFF0FF;}</style>", unsafe_allow_html=True)

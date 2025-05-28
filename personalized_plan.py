@@ -65,7 +65,7 @@ def display_personalized_plan():
             line-height: 1.5;
         }
         </style>
-        <div class="report-title">⚽ Real Madrid Player Personalization Tool ⚽</div>
+        <div class="report-title">⚽ Dubai Club Player Personalization Tool ⚽</div>
         """,
         unsafe_allow_html=True
     )
@@ -122,74 +122,111 @@ def display_personalized_plan():
                 "bmi": bmi
             }
 
-            prompt = f"""
-                
-                You are a professional sports performance expert. Based on the following player's physical and performance data, generate a structured and detailed plan in the following format:
-                
-                *** Here is your personalized performance, recovery, and nutrition plan: ***
+            system_prompt = (
+                "You are a performance optimization expert specializing in football. "
+                "You provide detailed, structured, and personalized training, recovery, and diet strategies "
+                "based on each player's physical and performance data."
+                "Always respond in markdown format using clear headings and bullet points."
+            )
 
-                🏋️ **Training Plan**
-                - **Focus Areas**: (e.g., Strength, Agility, Stamina, etc. based on the player's performance data)
-                - **Exercise Recommendations**: (List 3-5 exercises with sets, reps, and intensity recommendations)
-                - **Weekly Training Hours**: (e.g., X hours/week. Tailor based on energy level and soreness)
-                - **Performance Goals**: (e.g., Improve total distance, high-speed running, or sprints)
 
-                🛌 **Recovery Plan**
-                - **Rest Days**: (e.g., 2-3 days/week depending on soreness and stress levels)
-                - **Recovery Techniques**: (e.g., Massage, cryotherapy, active recovery, etc. customized for the player’s recovery needs)
-                - **Sleep Recommendations**: (e.g., Bedtime routine, optimal sleep duration for recovery and performance)
-                - **Additional Restorative Practices**: (e.g., Stretching, light recovery exercises, mindfulness)
+            user_prompt = f"""
+            📌 **Instruction**: Analyze the player's data below and generate a detailed plan using the same structure and tone as the example. Always format your response in markdown.
 
-                🍽️ **Diet Plan**
-                - **Daily Caloric Intake**: (e.g., XXXX kcal/day based on weight, BMI, and energy needs)
-                - **Macronutrient Breakdown**: (e.g., XX% Carbs / XX% Protein / XX% Fat for optimal performance and recovery)
-                - **Hydration**: (e.g., 3 liters of water/day or more depending on the intensity of activity)
-                - **Sample Meals**: 
-                    - Breakfast: (e.g., Protein-rich, high-carb meal for energy)
-                    - Lunch: (e.g., Balanced meal with lean protein and complex carbs)
-                    - Dinner: (e.g., Light, easily digestible protein source with healthy fats)
-                    - Snacks: (e.g., Energy-boosting snacks for recovery or pre-workout)
+            ---
 
-                Now generate a plan for this player:
+            ### ✅ Example Player Data:
+            - Weight: 75 kg  
+            - Height: 180 cm  
+            - Energy Level: High  
+            - Stress Level: Low  
+            - Sleep Quality: Excellent  
+            - Soreness Level: Low  
+            - Total Distance: 8.5 km  
+            - High-Speed Running: 2.0 km  
+            - Minutes per Session: 70  
+            - Number of Sprints: 12  
+            - BMI: 23.1  
 
-                - Weight: {weight} kg
-                - Height: {height} cm
-                - Energy Level: {energy}
-                - Stress Level: {stress}
-                - Sleep Quality: {sleep_quality}
-                - Soreness Level: {soreness}
-                - Total Distance: {total_distance} km
-                - High-Speed Running: {high_speed_running} km
-                - Minutes per Session: {minutes_per_session}
-                - Number of Sprints: {num_sprints}
-                - BMI: {bmi}
+            ### 📝 Example Output:
 
-                Be detailed but concise. Use bullet points for clarity and ensure each section follows the format above. Tailor the plan to the player’s current condition and optimize for future performance.
+            *** Here is your personalized performance, recovery, and nutrition plan: ***
 
+            🏋️ **Training Plan**
+            - **Focus Areas**: Stamina, Speed, Endurance  
+            - **Exercise Recommendations**:  
+            - Sprint intervals (6 x 100m at 90% max speed)  
+            - Tempo runs (20 minutes at moderate pace)  
+            - Agility ladder drills (3 sets, 30s each)  
+            - Bulgarian split squats (3 sets x 10 reps/leg)  
+            - Core circuit (planks, leg raises, Russian twists – 3 rounds)  
+            - **Weekly Training Hours**: 6–7 hours/week  
+            - **Performance Goals**: Improve sprint frequency and maintain high-speed running capacity
+
+            🛌 **Recovery Plan**
+            - **Rest Days**: 2 days/week  
+            - **Recovery Techniques**: Foam rolling, light cycling, contrast water therapy  
+            - **Sleep Recommendations**: 8 hours/night, sleep by 10:30 PM, avoid screens 1 hour before bed  
+            - **Additional Restorative Practices**: Post-training stretching, yoga once per week, 10-min daily meditation
+
+            🍽️ **Diet Plan**
+            - **Daily Caloric Intake**: 2800 kcal/day  
+            - **Macronutrient Breakdown**: 50% Carbs / 25% Protein / 25% Fat  
+            - **Hydration**: 3 liters of water/day  
+            - **Sample Meals**:  
+            - **Breakfast**: Oats with banana, almond butter, and protein shake  
+            - **Lunch**: Grilled chicken, quinoa, steamed broccoli  
+            - **Dinner**: Baked salmon, sweet potato, and avocado salad  
+            - **Snacks**: Greek yogurt with honey, nuts, rice cakes with peanut butter
+
+            ---
+
+            ### 🔍 Real Player Data:
+            - Weight: {weight} kg  
+            - Height: {height} cm  
+            - Energy Level: {energy}  
+            - Stress Level: {stress}  
+            - Sleep Quality: {sleep_quality}  
+            - Soreness Level: {soreness}  
+            - Total Distance: {total_distance} km  
+            - High-Speed Running: {high_speed_running} km  
+            - Minutes per Session: {minutes_per_session}  
+            - Number of Sprints: {num_sprints}  
+            - BMI: {bmi}  
+
+            ---
+
+            📌 **Guidelines**:
+            - Be detailed but concise.
+            - Use bullet points for clarity.
+            - Follow the exact structure shown in the example.
+            - Tailor recommendations to the player’s data.
+            - Keep tone professional, supportive, and motivating.
+
+            *** Now generate the plan using the structure above. ***
             """
 
 
-            completion = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+            stream = client.chat.completions.create(
+                model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a performance optimization expert, helping football players with personalized training, recovery, and diet strategies."},
-                    {"role": "user", "content": prompt}
-                ]
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                stream = True
             )
 
-            plan = completion.choices[0].message.content
-
-            st.markdown('<div class="section-title">📋 Personalized Plan</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="plan-content">{plan}</div>', unsafe_allow_html=True)
+            response = ""
+            placeholder = st.empty()
+            for chunk in stream:
+                response += chunk.choices[0].delta.content or ''
+                placeholder.markdown(response)
 
             # ---- Download as PDF ----
-            pdf = generate_pdf(plan)
+            pdf = generate_pdf(response)
             st.download_button(
                 label="📥 Download Plan as PDF",
                 data=pdf,
                 file_name="personalized_plan.pdf",
                 mime="application/pdf"
             )
-
-# Run the app
-display_personalized_plan()
