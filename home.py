@@ -1,6 +1,4 @@
 import streamlit as st
-from PIL import Image
-import pandas as pd
 
 def display_home():
     st.markdown("### Welcome to Dubai Club Sports Analytics Platform")
@@ -11,7 +9,7 @@ def display_home():
     Whether you're tracking team performance, analyzing individual progress, predicting injury risks, or designing personalized training plans,
     our platform delivers **real-time insights** to help you train smarter, safer, and stronger.
 
-    Designed for **inclusivity**, our tools transform raw data into actionable strategies—improving outcomes **on and off the field**.
+    Designed for **inclusivity**, our tools transform raw data into actionable strategies improving outcomes **on and off the field**.
 
     ---
     🔍 **Key Features:**
