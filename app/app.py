@@ -1,10 +1,10 @@
 import streamlit as st
 from PIL import Image
 import home
-import team_report
-import player_report
-import injury_prediction
-import personalized_plan
+import modules.reporting.team_report as team_report
+import modules.reporting.player_report as player_report
+import modules.predictions.injury_prediction as injury_prediction
+import modules.presonalization.personalized_plan as personalized_plan
 import pandas as pd
 
 # Load logo
