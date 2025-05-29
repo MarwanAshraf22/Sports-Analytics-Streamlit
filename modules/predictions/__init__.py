@@ -1,0 +1,1 @@
+from .injury_prediction import display_injury_prediction

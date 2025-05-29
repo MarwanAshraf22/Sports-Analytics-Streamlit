@@ -1,9 +1,11 @@
 import streamlit as st
 import joblib
 import numpy as np
+import os 
 
+model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'models', 'injury_risk_model.pkl'))
 # Load the trained model
-model = joblib.load('injury_risk_model.pkl')
+model = joblib.load(model_path)
 
 # Function to display the injury prediction UI
 def display_injury_prediction():

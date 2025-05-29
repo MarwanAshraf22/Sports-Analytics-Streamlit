@@ -1,12 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import streamlit as st
 from PIL import Image
 import home
-import modules.reporting.team_report as team_report
-import modules.reporting.player_report as player_report
-import modules.predictions.injury_prediction as injury_prediction
-import modules.presonalization.personalized_plan as personalized_plan
+from modules.reporting import display_team_report,display_player_report
+from modules.predictions import display_injury_prediction
+from modules.personalization import display_personalized_plan
 import pandas as pd
-
 # Load logo
 logo = Image.open('Images/Logo.png')
 
@@ -82,11 +84,11 @@ if menu == 'Home':
     home.display_home()
 elif menu == 'Team Report':
     if start_date and end_date:
-        team_report.display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
+        display_team_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Player Report':
     if start_date and end_date:
-        player_report.display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
+        display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df)
 elif menu == 'Injury Prediction':
-    injury_prediction.display_injury_prediction()
+    display_injury_prediction()
 elif menu == 'Personalized Plan':
-    personalized_plan.display_personalized_plan()
+    display_personalized_plan()
