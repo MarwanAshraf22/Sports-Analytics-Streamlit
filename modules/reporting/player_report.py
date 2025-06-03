@@ -60,6 +60,15 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     </div>
     ''', unsafe_allow_html=True)
 
+    # ✅ Moved here: Side-by-side Performance and Wellness Metrics tables
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Performance Metrics")
+        st.write(player_gps_data[['Session Date', 'Total Distance', 'High Speed Running', 'Session Time(mins)']])
+    with col2:
+        st.subheader("Wellness Metrics")
+        st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
+
     # Apply the card styling for key performance metrics
     style_metric_cards(
         background_color="#E3F2FD",
@@ -123,14 +132,3 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
                        line_shape='linear', 
                        color_discrete_sequence=['#0288D1'])
         st.plotly_chart(fig4)
-
-    # ✅ Side-by-side Performance and Wellness Metrics tables
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Performance Metrics")
-        st.write(player_gps_data[['Session Date', 'Total Distance', 'High Speed Running', 'Session Time(mins)']])
-
-    with col2:
-        st.subheader("Wellness Metrics")
-        st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
