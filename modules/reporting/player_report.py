@@ -39,8 +39,6 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     player_gps_data['Session Date'] = pd.to_datetime(player_gps_data['Session Date']).dt.strftime('%d-%m-%Y')
     player_wellness_data['Session Date'] = pd.to_datetime(player_wellness_data['Session Date']).dt.strftime('%d-%m-%Y')
 
-
-
     # Filtered Data for Player
     player_roster = roster_df[roster_df['Player Name'] == player_name].iloc[0]
 
@@ -64,12 +62,12 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
 
     # Apply the card styling for key performance metrics
     style_metric_cards(
-        background_color="#E3F2FD",  # Light blue background
-        border_size_px=3,  # Border size
-        border_color="#0288D1",  # Blue border color
-        border_radius_px=12,  # Rounded corners
-        border_left_color="#81D4FA",  # Light cyan left border
-        box_shadow=True  # Apply box shadow
+        background_color="#E3F2FD",
+        border_size_px=3,
+        border_color="#0288D1",
+        border_radius_px=12,
+        border_left_color="#81D4FA",
+        box_shadow=True
     )
 
     # Create cards for key performance metrics
@@ -80,10 +78,6 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
         avg_wellness_score = player_wellness_data['Total Score'].mean()
         st.metric("Average Wellness Score", f"{avg_wellness_score:.2f}", delta=None)
 
-    # Display performance metrics (Total Distance, Session Time, etc.)
-    st.subheader("Performance Metrics")
-    st.write(player_gps_data[['Session Date', 'Total Distance', 'High Speed Running', 'Session Time(mins)']])
-
     # Calculate performance metrics
     total_high_speed_running = player_gps_data['High Speed Running'].sum()
     total_distance = player_gps_data['Total Distance'].sum()
@@ -91,13 +85,9 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     max_game_high_speed_running = player_roster['Max Game High Speed Running']
     max_game_total_distance = player_roster['Max Game Total Distance']
     
-    # Calculate Daily Max HSR (similar to the DAX formula)
     daily_max_hsr = player_gps_data.groupby('Player Name')['High Speed Running'].max().loc[player_name]
-
-    # Calculate Daily Max TD (similar to the DAX formula)
     daily_max_td = player_gps_data.groupby('Player Name')['Total Distance'].max().loc[player_name]
 
-    # Calculate percentage metrics
     max_game_hsr = (total_high_speed_running / max_game_high_speed_running) * 100
     max_game_td = (total_distance / max_game_total_distance) * 100
     max_td = (total_distance / daily_max_td) * 100
@@ -111,7 +101,6 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     }
     performance_df = pd.DataFrame(performance_data)
 
-    # Create Bar Chart 
     fig = px.bar(performance_df, x='Metric', y='Carvajal', 
                  title='Performance Metrics Comparison',
                  color_discrete_sequence=['#0288D1'])  # Real Madrid Blue
@@ -120,23 +109,28 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     # Create side-by-side visualizations
     col1, col2 = st.columns(2)
     with col1:
-        # Scatter plot for High Speed Running vs Session Time
         fig = px.scatter(player_gps_data, x='Session Date', y='High Speed Running',
                          title=f'High Speed Running vs Session Time for {player_name}',
                          labels={'Session Date': 'Date', 'High Speed Running': 'High Speed Running (m)'},
-                         color='High Speed Running', color_continuous_scale=['#0288D1', '#81D4FA'])  # Blue shades
+                         color='High Speed Running', color_continuous_scale=['#0288D1', '#81D4FA'])
         st.plotly_chart(fig)
 
     with col2:
-        # Create a Z-Score Wellness Plot for Energy
         wellness_scores = player_wellness_data[['Session Date', 'Energy', 'Soreness', 'Sleep Quality', 'Stress', 'Total Score']]
         wellness_scores['Z-Score Energy'] = stats.zscore(wellness_scores['Energy'])
         fig4 = px.line(wellness_scores, x='Session Date', y='Z-Score Energy', 
                        title=f'Energy Z-Score for {player_name}', 
                        line_shape='linear', 
-                       color_discrete_sequence=['#0288D1'])  # Real Madrid Blue
+                       color_discrete_sequence=['#0288D1'])
         st.plotly_chart(fig4)
 
-    # Display wellness data (Energy, Sleep Quality, Stress, etc.)
-    st.subheader("Wellness Metrics")
-    st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
+    # ✅ Side-by-side Performance and Wellness Metrics tables
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Performance Metrics")
+        st.write(player_gps_data[['Session Date', 'Total Distance', 'High Speed Running', 'Session Time(mins)']])
+
+    with col2:
+        st.subheader("Wellness Metrics")
+        st.write(player_wellness_data[['Session Date', 'Energy', 'Sleep Quality', 'Stress', 'Soreness', 'Total Score']])
