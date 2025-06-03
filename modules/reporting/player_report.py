@@ -28,9 +28,17 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     filtered_gps_data = gps_df[(pd.to_datetime(gps_df['Session Date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(gps_df['Session Date']) <= pd.to_datetime(end_date))]
     filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Session Date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(wellness_df['Session Date']) <= pd.to_datetime(end_date))]
 
-    # Filter data for the selected player
+    # Filter player-specific data
+    player_gps_data = filtered_gps_data[filtered_gps_data['Player Name'] == player_name]
+    player_wellness_data = filtered_wellness_data[filtered_wellness_data['Player Name'] == player_name]
+
+    if player_gps_data.empty or player_wellness_data.empty:
+        st.warning("No data available for this player in the selected date range.")
+        return
+
     player_gps_data['Session Date'] = pd.to_datetime(player_gps_data['Session Date']).dt.strftime('%d-%m-%Y')
     player_wellness_data['Session Date'] = pd.to_datetime(player_wellness_data['Session Date']).dt.strftime('%d-%m-%Y')
+
 
 
     # Filtered Data for Player
