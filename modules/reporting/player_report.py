@@ -29,8 +29,9 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
     filtered_wellness_data = wellness_df[(pd.to_datetime(wellness_df['Session Date']) >= pd.to_datetime(start_date)) & (pd.to_datetime(wellness_df['Session Date']) <= pd.to_datetime(end_date))]
 
     # Filter data for the selected player
-    player_gps_data = filtered_gps_data[filtered_gps_data['Player Name'] == player_name]
-    player_wellness_data = filtered_wellness_data[filtered_wellness_data['Player Name'] == player_name]
+    player_gps_data['Session Date'] = pd.to_datetime(player_gps_data['Session Date']).dt.strftime('%d-%m-%Y')
+    player_wellness_data['Session Date'] = pd.to_datetime(player_wellness_data['Session Date']).dt.strftime('%d-%m-%Y')
+
 
     # Filtered Data for Player
     player_roster = roster_df[roster_df['Player Name'] == player_name].iloc[0]
