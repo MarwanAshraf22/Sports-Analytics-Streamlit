@@ -11,49 +11,66 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # Function to calculate BMI
 def calculate_bmi(weight, height):
     if weight > 0 and height > 0:
-        return weight / (height / 100) ** 2  # Convert height from cm to meters
+        return weight / (height / 100) ** 2
     return 0
 
 # Main app function
 def display_personalized_plan():
+    # Theme-based styling
     st.markdown(
         """
         <style>
-        .report-title {
-            font-size: 40px;
-            font-weight: bold;
-            color: #373433ff;
+        body {
+            font-family: 'Dubai', sans-serif;
+        }
+        .title-box {
+            background-color: #D6EFFF;
+            padding: 20px;
+            border-radius: 12px;
+            color: #003366;
             text-align: center;
-            padding-bottom: 10px;
-        }
-        .section-title {
-            font-size: 22px;
+            font-size: 30px;
             font-weight: bold;
-            color: #444;
+        }
+        .section-header {
+            background-color: #D6EFFF;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            color: #003366;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .response-box {
+            background-color: #FFFFFF;
+            color: #003366;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #cce0f4;
             margin-top: 20px;
-            padding-bottom: 5px;
-            background-color: #f0f0f0;
-            padding-left: 10px;
-        }
-        .subtext {
-            font-size: 14px;
-            color: gray;
-        }
-        .plan-content {
+            line-height: 1.6;
             font-size: 16px;
-            color: #333;
-            line-height: 1.5;
+        }
+        .response-box h3 {
+            color: #004080;
+            margin-top: 20px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .response-box ul {
+            margin-left: 20px;
         }
         </style>
-        <div class="report-title">⚽ Dubai Club Player Personalization Tool ⚽</div>
+        <div class="title-box">⚽ Dubai Club Player Personalization Tool ⚽</div>
         """,
         unsafe_allow_html=True
     )
 
-    st.markdown('<p class="subtext">Fill out the form below to get your personalized training, recovery, and diet plan.</p>', unsafe_allow_html=True)
+    st.caption("Fill out the form below to get your personalized training, recovery, and diet plan.")
 
     # ---- Player Physical Data ----
-    st.markdown('<div class="section-title">📊 Player Physical Data</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">📊 Player Physical Data</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         weight = st.number_input('Weight (kg)', min_value=30, max_value=200, value=75)
@@ -64,7 +81,7 @@ def display_personalized_plan():
     st.success(f'✅ BMI: **{bmi:.2f}**')
 
     # ---- Performance Data ----
-    st.markdown('<div class="section-title">📈 Performance Metrics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">📈 Performance Metrics</div>', unsafe_allow_html=True)
     col3, col4 = st.columns(2)
     with col3:
         energy = st.slider('⚡ Energy Level', 1, 10, 5)
@@ -74,7 +91,7 @@ def display_personalized_plan():
         soreness = st.slider('💪 Soreness Level', 1, 10, 5)
 
     # ---- Session & Sprint Data ----
-    st.markdown('<div class="section-title">🏃 Session & Sprint Data</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">🏃 Session & Sprint Data</div>', unsafe_allow_html=True)
     col5, col6 = st.columns(2)
     with col5:
         total_distance = st.number_input('Total Distance (km)', min_value=0.0, format="%.2f", value=5.0)
@@ -83,30 +100,16 @@ def display_personalized_plan():
         high_speed_running = st.number_input('High-Speed Running (km)', min_value=0.0, format="%.2f", value=1.0)
         num_sprints = st.number_input('Number of Sprints', min_value=0, max_value=50, value=5)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
 
     # ---- Generate Button ----
     if st.button('🚀 Generate Personalized Plan', use_container_width=True):
-        # Basic validation
         if weight <= 0 or height <= 0:
             st.error("Please enter valid weight and height values greater than zero.")
             return
 
         with st.spinner('🧠 Generating your optimized plan...'):
-            player_data = {
-                "energy": energy,
-                "sleep_quality": sleep_quality,
-                "stress": stress,
-                "soreness": soreness,
-                "total_distance": total_distance,
-                "high_speed_running": high_speed_running,
-                "minutes_per_session": minutes_per_session,
-                "num_sprints": num_sprints,
-                "weight": weight,
-                "height": height,
-                "bmi": bmi
-            }
-
+            bmi = calculate_bmi(weight, height)
             system_prompt = (
                 "You are a performance optimization expert specializing in football. "
                 "You provide detailed, structured, and personalized training, recovery, and diet strategies "
@@ -115,47 +118,67 @@ def display_personalized_plan():
             )
 
             user_prompt = f"""
-            📌 **Instruction**:
+📌 **Instruction**:
+You must follow this exact structure:
 
-            1. Start with a section titled `🔍 Player Data Interpretation` presenting clear, concise bullet points that explain each physical and performance metric. Use precise, supportive language that helps the athlete understand implications for health, recovery, and elite-level performance optimization.
+---
 
-            2. Then create a fully customized, data-driven plan divided into three sections:
-            - `🏋️ Training Plan`
-            - `🛌 Recovery Plan`
-            - `🍽️ Diet Plan`
+### 🔍 Player Data Interpretation
+Use bullet points. Interpret each of the following:
+- Weight
+- Height
+- Energy Level
+- Stress Level
+- Sleep Quality
+- Soreness Level
+- Total Distance
+- High-Speed Running
+- Minutes per Session
+- Number of Sprints
+- BMI
 
-            Each section must:
-            - Use bullet points for clarity.
-            - Employ a professional, motivating, and scientifically grounded tone.
-            - Tailor recommendations precisely to the player's data and performance profile.
-            - In the `🍽️ Diet Plan`, provide specific, exact food items and portion guidance to meet the athlete’s caloric and macronutrient needs, optimizing for performance, recovery, and body composition goals.
+Each bullet should be concise, clear, and actionable.
 
-            ---
+---
 
-            ### 🔍 Real Player Data:
-            - Weight: {weight} kg  
-            - Height: {height} cm  
-            - Energy Level: {energy}  
-            - Stress Level: {stress}  
-            - Sleep Quality: {sleep_quality}  
-            - Soreness Level: {soreness}  
-            - Total Distance: {total_distance} km  
-            - High-Speed Running: {high_speed_running} km  
-            - Minutes per Session: {minutes_per_session}  
-            - Number of Sprints: {num_sprints}  
-            - BMI: {bmi}  
+### 🏋️ Training Plan
+Provide 3–5 bullet points personalized to the player's data.
+Focus on volume, sprint frequency, endurance vs explosive needs, and practical drills.
 
-            ---
+---
 
-            📌 **Guidelines**:
-            - Begin with `🔍 Player Data Interpretation` in bullet points.  
-            - Follow with fully tailored `🏋️ Training Plan`, `🛌 Recovery Plan`, and `🍽️ Diet Plan` sections.  
-            - Use clear, professional, motivating language suited for elite athletes and coaches.  
-            - Provide exact foods, portions, and meal timing in the diet plan, adjusted to the player’s profile.  
-            - Avoid generic advice; every recommendation must be data-driven and specific.
+### 🛌 Recovery Plan
+Provide 3–5 recovery recommendations tailored to soreness, stress, and sleep levels.
 
-            ***Generate the detailed, precise interpretation and plan now.***
-            """
+---
+
+### 🍽️ Diet Plan
+Provide exact:
+- Meal timing suggestions
+- Macronutrient breakdowns (e.g., carbs, protein, fat grams)
+- Food examples with portion sizes
+
+Make it specific to the athlete’s weight, BMI, and training load.
+
+---
+
+### 🔍 Real Player Data:
+- Weight: {weight} kg  
+- Height: {height} cm  
+- Energy Level: {energy}  
+- Stress Level: {stress}  
+- Sleep Quality: {sleep_quality}  
+- Soreness Level: {soreness}  
+- Total Distance: {total_distance} km  
+- High-Speed Running: {high_speed_running} km  
+- Minutes per Session: {minutes_per_session}  
+- Number of Sprints: {num_sprints}  
+- BMI: {bmi:.2f}  
+
+---
+⚠️ Avoid narrative or prose. Use only headings + bullet points as described.
+Respond in markdown.
+"""
 
             try:
                 stream = client.chat.completions.create(
@@ -174,9 +197,9 @@ def display_personalized_plan():
             placeholder = st.empty()
             for chunk in stream:
                 response += chunk.choices[0].delta.content or ''
-                placeholder.markdown(response)
+                placeholder.markdown(f'<div class="response-box">{response}</div>', unsafe_allow_html=True)
 
-            # PDF download button
+            # PDF download
             pdf_buffer = generate_pdf(response)
             st.download_button(
                 label="📄 Download Plan as PDF",

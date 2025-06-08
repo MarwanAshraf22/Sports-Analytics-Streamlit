@@ -1,14 +1,18 @@
+import streamlit as st
+st.set_page_config(layout="wide")
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import streamlit as st
 from PIL import Image
 import home
 from modules.reporting import display_team_report,display_player_report
 from modules.predictions import display_injury_prediction
 from modules.personalization import display_personalized_plan
+from modules.personalization import display_pod_plan
 import pandas as pd
+
 # Load logo
 logo = Image.open('Images/Logo.png')
 
@@ -51,11 +55,12 @@ icons = {
     'Team Report': '👥',
     'Player Report': '⚽',
     'Injury Prediction': '🤕',
-    'Personalized Plan': '📝'
+    'Personalized Plan': '📝',
+    'POD Plan': '📦'
 }
 menu = st.sidebar.selectbox(
     'Choose an option:',
-    ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan'),
+    ('Home', 'Team Report', 'Player Report', 'Injury Prediction', 'Personalized Plan','POD Plan'),
     format_func=lambda x: f"{icons[x]} {x}"
 )
 
@@ -92,3 +97,5 @@ elif menu == 'Injury Prediction':
     display_injury_prediction()
 elif menu == 'Personalized Plan':
     display_personalized_plan()
+elif menu == 'POD Plan':
+    display_pod_plan()
