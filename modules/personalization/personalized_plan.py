@@ -2,27 +2,26 @@ import streamlit as st
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+import pandas as pd
 from .generate_pdf import generate_pdf
 
 # Load environment variables
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Function to calculate BMI
+# Load player data
+player_df = pd.read_csv("data/players_data.csv")
+
 def calculate_bmi(weight, height):
     if weight > 0 and height > 0:
         return weight / (height / 100) ** 2
     return 0
 
-# Main app function
 def display_personalized_plan():
-    # Theme-based styling
     st.markdown(
         """
         <style>
-        body {
-            font-family: 'Dubai', sans-serif;
-        }
+        body { font-family: 'Dubai', sans-serif; }
         .title-box {
             background-color: #D6EFFF;
             padding: 20px;
@@ -58,127 +57,234 @@ def display_personalized_plan():
             font-weight: 700;
             font-size: 20px;
         }
-        .response-box ul {
-            margin-left: 20px;
-        }
+        .response-box ul { margin-left: 20px; }
         </style>
-        <div class="title-box">⚽ Dubai Club Player Personalization Tool ⚽</div>
+        <div class="title-box">🏅 Personalized Plan for People of Determination 🏅</div>
         """,
         unsafe_allow_html=True
     )
 
-    st.caption("Fill out the form below to get your personalized training, recovery, and diet plan.")
+    st.caption("Select a player to load their performance and wellness data.")
 
-    # ---- Player Physical Data ----
-    st.markdown('<div class="section-header">📊 Player Physical Data</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        weight = st.number_input('Weight (kg)', min_value=30, max_value=200, value=75)
-    with col2:
-        height = st.number_input('Height (cm)', min_value=100, max_value=250, value=175)
+    player_name = st.selectbox("Select Player", player_df['Player Name'].unique())
+    player_data = player_df[player_df['Player Name'] == player_name].iloc[0]
 
+    if player_data.isnull().any():
+        st.warning("⚠️ Some data fields are missing for this player. Please review the dataset.")
+
+    # Extract player metrics
+    height = player_data['Height']
+    weight = player_data['Weight']
+    classification = player_data['Classification Category']
+    disability_type = player_data['Disability Type']
+    speed = player_data['Speed (m/s)']
+    acceleration = player_data['Acceleration']
+    distance = player_data['Distance Covered (m)']
+    training_volume = player_data['Training Volume (min/day)']
+    training_intensity = player_data['Training Intensity (1–10)']
+    heart_rate = player_data['Heart Rate (bpm)']
+    sleep = player_data['Sleep Duration (hrs)']
+    pain_scale = player_data['Pain Scale']
     bmi = calculate_bmi(weight, height)
-    st.success(f'✅ BMI: **{bmi:.2f}**')
 
-    # ---- Performance Data ----
-    st.markdown('<div class="section-header">📈 Performance Metrics</div>', unsafe_allow_html=True)
-    col3, col4 = st.columns(2)
-    with col3:
-        energy = st.slider('⚡ Energy Level', 1, 10, 5)
-        stress = st.slider('😣 Stress Level', 1, 10, 5)
-    with col4:
-        sleep_quality = st.slider('💤 Sleep Quality', 1, 10, 5)
-        soreness = st.slider('💪 Soreness Level', 1, 10, 5)
-
-    # ---- Session & Sprint Data ----
-    st.markdown('<div class="section-header">🏃 Session & Sprint Data</div>', unsafe_allow_html=True)
-    col5, col6 = st.columns(2)
-    with col5:
-        total_distance = st.number_input('Total Distance (km)', min_value=0.0, format="%.2f", value=5.0)
-        minutes_per_session = st.number_input('Minutes per Session', min_value=0, max_value=300, value=60)
-    with col6:
-        high_speed_running = st.number_input('High-Speed Running (km)', min_value=0.0, format="%.2f", value=1.0)
-        num_sprints = st.number_input('Number of Sprints', min_value=0, max_value=50, value=5)
+    # Show player metrics
+    st.markdown(f"<div class='section-header'>📋 Loaded Data for: {player_name}</div>", unsafe_allow_html=True)
+    player_table = pd.DataFrame([{
+        "Height (cm)": height,
+        "Weight (kg)": weight,
+        "BMI": round(bmi, 2),
+        "Classification": classification,
+        "Disability Type": disability_type,
+        "Speed (m/s)": speed,
+        "Acceleration (m/s²)": acceleration,
+        "Distance (m)": distance,
+        "Training Volume (min/day)": training_volume,
+        "Training Intensity": training_intensity,
+        "Heart Rate (bpm)": heart_rate,
+        "Sleep (hrs)": sleep,
+        "Pain Scale": pain_scale
+    }])
+    st.dataframe(player_table, use_container_width=True)
 
     st.markdown("---")
 
-    # ---- Generate Button ----
     if st.button('🚀 Generate Personalized Plan', use_container_width=True):
-        if weight <= 0 or height <= 0:
-            st.error("Please enter valid weight and height values greater than zero.")
-            return
+        with st.spinner('🧠 Generating your personalized plan...'):
 
-        with st.spinner('🧠 Generating your optimized plan...'):
-            bmi = calculate_bmi(weight, height)
             system_prompt = (
-                "You are a performance optimization expert specializing in football. "
-                "You provide detailed, structured, and personalized training, recovery, and diet strategies "
-                "based on each player's physical and performance data. "
-                "Always respond in markdown format using clear headings and bullet points."
-            )
+            "You are a high-performance sports scientist and rehabilitation specialist working with elite athletes with disabilities. "
+            "You receive detailed player data and must generate a safe, individualized training, recovery, diet, and supplement plan. "
+            "You must fully adapt your output to the player's body composition (e.g., BMI), performance metrics, disability type, and classification. "
+            "If the player has a high BMI or low training capacity, reduce training intensity, avoid joint overload, and scale caloric intake accordingly. "
+            "If the disability impairs motor control (e.g., Ataxia), avoid unstable or dangerous exercises and focus on neuromuscular control. "
+            "Your response must be clear, professional, and actionable."
+        )
+
+
 
             user_prompt = f"""
-📌 **Instruction**:
-You must follow this exact structure:
+            📌 **Instruction**:
+            You must follow this exact structure. First, study the completed example below.
+            Then, apply the same structure to the hidden player data that follows.
 
----
+            Do **not repeat or display** the player data or disability profile. Use them only to inform your recommendations.
 
-### 🔍 Player Data Interpretation
-Use bullet points. Interpret each of the following:
-- Weight
-- Height
-- Energy Level
-- Stress Level
-- Sleep Quality
-- Soreness Level
-- Total Distance
-- High-Speed Running
-- Minutes per Session
-- Number of Sprints
-- BMI
+            ---
 
-Each bullet should be concise, clear, and actionable.
+            ## ✅ Example Output (Use this structure exactly):
 
----
+            ---
 
-### 🏋️ Training Plan
-Provide 3–5 bullet points personalized to the player's data.
-Focus on volume, sprint frequency, endurance vs explosive needs, and practical drills.
+            ### 🧠 Context Summary:
 
----
+            The athlete has a lower-limb impairment with classification suitable for unilateral sprinting. With a BMI of 24.07, their body composition is optimal for speed-focused training. However, sleep duration of only 6.5 hours and a pain level of 4/10 warrant moderate recovery emphasis. Their high training volume and elevated heart rate indicate the need for careful monitoring of fatigue and recovery balance.
 
-### 🛌 Recovery Plan
-Provide 3–5 recovery recommendations tailored to soreness, stress, and sleep levels.
+            ---
 
----
+            ### 🔍 Player Data Interpretation :
 
-### 🍽️ Diet Plan
-Provide exact:
-- Meal timing suggestions
-- Macronutrient breakdowns (e.g., carbs, protein, fat grams)
-- Food examples with portion sizes
+            - Weight (78 kg): Normal range; supports lean power output  
+            - Height (180 cm): Biomechanically neutral  
+            - Sleep Duration (6.5 hrs): Below optimal; may impair recovery  
+            - Pain Scale (4/10): Moderate; monitor joint loading  
+            - Distance Covered (5200 m): High aerobic work capacity  
+            - Speed (5.8 m/s): Above average for amputee sprint class  
+            - Acceleration (2.3 m/s²): Excellent, suggesting explosive power  
+            - Training Volume (85 min/day): High; recovery load must scale  
+            - Training Intensity (7/10): Matches volume well  
+            - Heart Rate (152 bpm): Slightly elevated; monitor for fatigue  
+            - BMI (24.07): Healthy range
 
-Make it specific to the athlete’s weight, BMI, and training load.
+            ---
 
----
+            ### 🏋️ Training Plan :  
+            **Brief:**  
+            The athlete’s BMI, classification, and strong acceleration metrics justify a focus on explosive lower-body work. Given the moderate pain level and good training volume, training is balanced but avoids overuse stress.
 
-### 🔍 Real Player Data:
-- Weight: {weight} kg  
-- Height: {height} cm  
-- Energy Level: {energy}  
-- Stress Level: {stress}  
-- Sleep Quality: {sleep_quality}  
-- Soreness Level: {soreness}  
-- Total Distance: {total_distance} km  
-- High-Speed Running: {high_speed_running} km  
-- Minutes per Session: {minutes_per_session}  
-- Number of Sprints: {num_sprints}  
-- BMI: {bmi:.2f}  
+            - Emphasize repeat sprints (30–40m), 3 sets x 5 reps  
+            - Cap sprint volume under 700m/session to avoid fatigue  
+            - Use 3:1 periodization (3 intense, 1 recovery week)  
+            - Include unilateral strength training (glute/ham focus)  
+            - Drill prosthetic balance and push-off mechanics
 
----
-⚠️ Avoid narrative or prose. Use only headings + bullet points as described.
-Respond in markdown.
-"""
+            ---
+
+            ### 🛌 Recovery Plan :  
+            **Brief:**  
+            Recovery is guided by the athlete's suboptimal sleep (6.5 hrs) and pain score (4/10), with added attention to soft tissue and neurological recovery based on classification.
+
+            - Contrast baths 2x/week after heavy sprint days  
+            - Daily static stretching for hip/lower limb  
+            - Add 30-min nap if <7 hrs of sleep  
+            - Use massage gun (non-amputated limb) post-training  
+            - Consider acetaminophen only when pain >5/10
+
+            ---
+
+            ### 🍽️ Diet Plan :  
+            **Brief:**  
+            The diet supports high training volume and normal BMI. Macronutrients are balanced to fuel performance and manage inflammation, with meal timing aligned to training load.
+
+            - Meal timing: Carbs around training, protein evenly  
+            - Daily kcal: ~2800  
+            - Macros: 350g carbs, 150g protein, 75g fat  
+            - Food examples:  
+            - Breakfast: 2 boiled eggs + 1/2 cup oats + banana  
+            - Lunch: 120g chicken breast + 1 cup brown rice + salad  
+            - Dinner: 150g salmon + sweet potato + broccoli  
+            - Snack: Protein bar or shake
+
+            ---
+
+            ### 💊 Supplement Plan :  
+            **Brief:**  
+            Supplementation targets joint support, muscle recovery, and anti-inflammatory effects. Selections are adapted to the athlete's classification and training stress markers.
+
+            - Creatine Monohydrate – power – 5g/day post-workout  
+            - Omega-3 – inflammation – 1g with dinner  
+            - Vitamin D – bone health – 2000 IU daily  
+            - Caffeine – optional pre-workout – 200mg  
+            - Collagen + Vit C – joint/tendon support – 10g collagen + 50mg Vit C pre-training
+
+            ---
+
+            ⚠️ You MUST customize all recommendations to reflect:
+            - The athlete's physical capability (e.g., overweight, motor impairment)
+            - Their exact classification category
+            - Their training load, pain, and recovery needs
+
+            ## 🔍 Your Turn: Generate Plan
+
+            Use the internal player data below. **Do not display or repeat it** in your output.
+
+            📌 Additional Instructions:
+            - **Always consider Disability Type and Classification** when generating training, recovery, diet, and supplement plans.
+            - Highlight any red flags (e.g. high pain, low sleep, elevated heart rate).
+            - Avoid exercises or supplements that are contraindicated for the given disability or classification.
+
+            📌 Interpretation Instructions:
+            - BMI ≥ 30 → Recommend low-impact cardio, caloric control, avoid joint overload.
+            - Sleep < 7 hrs → Prioritize recovery, improve sleep hygiene, reduce training load.
+            - Pain Scale ≥ 5 → Suggest pain-modulating strategies and training deloads.
+            - Training Volume < 45 min/day → Avoid prescribing high-calorie diets or advanced programming.
+            - Always analyze the **Disability Type and Classification** to shape:
+            - Exercise safety (e.g., equipment needs, range of motion limits)
+            - Functional capability (e.g., strength imbalance, limb use, spasticity)
+            - Recovery needs (e.g., longer rest, assisted modalities)
+            - Dietary and supplement support (e.g., bone health, inflammation, neurological support)
+
+            📌 Output Requirements:
+            - Start with a **Context Summary** paragraph (3–5 sentences).
+            - Then write a short **brief (1–2 sentences)** before each of the five sections:
+            - Explain how the player’s **BMI**, **disability type**, **classification**, **training volume**, **sleep**, and **pain** shape that part of the plan.
+            - Then proceed with structured bullet-point recommendations.
+            - Do not repeat or display raw input data.
+            - No generalizations or fluff — tie all recommendations directly to the data.
+
+            [DATA]  
+            - Weight: {weight} kg  
+            - Height: {height} cm  
+            - Sleep Duration: {sleep} hrs  
+            - Pain Scale: {pain_scale}/10  
+            - Distance Covered: {distance} m  
+            - Speed: {speed} m/s  
+            - Acceleration: {acceleration} m/s²  
+            - Training Volume: {training_volume} min/day  
+            - Training Intensity: {training_intensity}/10  
+            - Heart Rate: {heart_rate} bpm  
+            - BMI: {bmi:.2f}  
+            - Disability Type: {disability_type}  
+            - Classification: {classification}  
+
+            ---
+
+            ### 🧠 Context Summary:
+
+            ---
+
+            ### 🔍 Player Data Interpretation :
+
+            ---
+
+            ### 🏋️ Training Plan :  
+            **Brief:** Explain how BMI, disability, classification, and training load shape the plan.
+
+            ---
+
+            ### 🛌 Recovery Plan :  
+            **Brief:** Explain how pain, sleep, classification, and fatigue risk influence the recovery strategy.
+
+            ---
+
+            ### 🍽️ Diet Plan :  
+            **Brief:** Justify calorie amount and macro distribution based on BMI, volume, and recovery needs.
+
+            ---
+
+            ### 💊 Supplement Plan :  
+            **Brief:** Justify supplements based on disability support (e.g., joints, inflammation, neural recovery).
+            """
+
 
             try:
                 stream = client.chat.completions.create(
@@ -190,16 +296,16 @@ Respond in markdown.
                     stream=True
                 )
             except Exception as e:
-                st.error(f"Error generating plan: {e}")
+                st.error("❌ Unable to generate plan. Please check your API key or try again later.")
                 return
 
             response = ""
             placeholder = st.empty()
             for chunk in stream:
                 response += chunk.choices[0].delta.content or ''
-                placeholder.markdown(f'<div class="response-box">{response}</div>', unsafe_allow_html=True)
+                placeholder.markdown(response, unsafe_allow_html=False)
 
-            # PDF download
+
             pdf_buffer = generate_pdf(response)
             st.download_button(
                 label="📄 Download Plan as PDF",

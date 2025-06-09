@@ -6,7 +6,9 @@ from datetime import datetime
 from streamlit_extras.metric_cards import style_metric_cards
 
 def display_player_report(player_name, start_date, end_date, gps_df, wellness_df, roster_df):
-    # Inject custom theme-based styles
+    # Define custom color palette
+    custom_colors = ['#003366', '#0072C6', '#81D4FA', '#FFD700']
+
     st.markdown(
         """
         <style>
@@ -140,7 +142,7 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
 
     fig = px.bar(performance_df, x='Metric', y=player_name,
                  title='Performance Metrics Comparison',
-                 color_discrete_sequence=['#0072C6'],
+                 color_discrete_sequence=[custom_colors[1]],
                  text_auto='.2f')
     fig.update_layout(yaxis_tickformat='%')
     st.plotly_chart(fig)
@@ -152,7 +154,7 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
                          title=f'High Speed Running vs Session Date for {player_name}',
                          labels={'Session Display': 'Date', 'High Speed Running': 'High Speed Running (m)'},
                          color='High Speed Running',
-                         color_continuous_scale=['#0072C6', '#81D4FA'])
+                         color_continuous_scale=custom_colors)
         st.plotly_chart(fig)
 
     with col2:
@@ -162,5 +164,5 @@ def display_player_report(player_name, start_date, end_date, gps_df, wellness_df
                        title=f'Energy Z-Score for {player_name}',
                        line_shape='linear',
                        markers=True,
-                       color_discrete_sequence=['#0072C6'])
+                       color_discrete_sequence=[custom_colors[1]])
         st.plotly_chart(fig4)
